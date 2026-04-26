@@ -97,7 +97,7 @@ export default function App() {
                                     Cor: <input type="color" value={numeratorColor} onChange={e => setNumeratorColor(e.target.value)} />
                                 </label>
                                 <label>
-                                    Transparência: <input type="range" min="0" max="100" value={numeratorAlpha} onChange={e => setNumeratorAlpha(Number(e.target.value))} />
+                                    Opacidade: <input type="range" min="0" max="100" value={numeratorAlpha} onChange={e => setNumeratorAlpha(Number(e.target.value))} />
                                     {numeratorAlpha}%
                                 </label>
                             </div>
@@ -107,7 +107,7 @@ export default function App() {
                                     Cor: <input type="color" value={unfilledColor} onChange={e => setUnfilledColor(e.target.value)} />
                                 </label>
                                 <label>
-                                    Transparência: <input type="range" min="0" max="100" value={unfilledAlpha} onChange={e => setUnfilledAlpha(Number(e.target.value))} />
+                                    Opacidade: <input type="range" min="0" max="100" value={unfilledAlpha} onChange={e => setUnfilledAlpha(Number(e.target.value))} />
                                     {unfilledAlpha}%
                                 </label>
                             </div>
@@ -117,7 +117,7 @@ export default function App() {
                                     Cor: <input type="color" value={borderColor} onChange={e => setBorderColor(e.target.value)} />
                                 </label>
                                 <label>
-                                    Transparência: <input type="range" min="0" max="100" value={borderAlpha} onChange={e => setBorderAlpha(Number(e.target.value))} />
+                                    Opacidade: <input type="range" min="0" max="100" value={borderAlpha} onChange={e => setBorderAlpha(Number(e.target.value))} />
                                     {borderAlpha}%
                                 </label>
                                 <label>
