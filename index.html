@@ -200,155 +200,130 @@ let equivMode='mult', currentDivisors=[1];
 let retaFractions=[{num:1,den:4},{num:3,den:4}];
 const POINT_COLORS=['#6c5ce7','#e17055','#00b894','#0984e3','#e84393','#d63031','#00cec9','#fdcb6e'];
 let quizScore=0, quizTotal=0, quizAnswer=null, quizAnswered=false;
-function drawSVG(shape,filled,total,color){
-    const size=280,cx=size/2,cy=size/2,r=size*0.42;
-    const offColor='rgba(220,220,220,0.55)';
-    const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
-    svg.setAttribute('width',size); 
-    svg.setAttribute('height',size);
+function drawSVG(shape, filled, total, color) {
+    const width = 280;
+    let height = 280; 
+    const padding = 20;
+    const minBlockSize = 25; 
+    
+    const cx = width / 2;
+    const offColor = 'rgba(220,220,220,0.55)';
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 
-    // 🔥 CIRCULO só para total=1 e NÃO rect
-    if(total===1 && shape!=='rect'){
-        const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
-        c.setAttribute('cx',cx);
-        c.setAttribute('cy',cy);
-        c.setAttribute('r',r);
-        c.setAttribute('fill',filled>=1?color:offColor);
-        c.setAttribute('stroke','#333');
-        c.setAttribute('stroke-width','2');
-        svg.appendChild(c);
-        return svg;
-    }
-
-    if(shape==='rect'){
-
-        // 🔥 MELHOR grade: prioriza divisores exatos mais quadrados (MAX 11 cols)
-        function getBestGrid(n){
-            const maxCols = 11;
-            
-            let bestCols = 1;
-            let bestRows = n;
-            let bestScore = Infinity;
-            
-            // PRIORIDADE 1: Quadrados perfeitos
-            for(let i=1;i<=Math.sqrt(n);i++){
-                if(n % i === 0){
-                    const rows = i;
-                    const cols = n / i;
-                    if(rows === cols){
-                        return {cols: cols, rows: rows};
-                    }
-                }
-            }
-            
-            // PRIORIDADE 2: TODOS os divisores exatos (cols <= 11), mais quadrados
-            for(let cols=1; cols<=maxCols; cols++){
-                if(n % cols === 0){
-                    const rows = n / cols;
-                    const diff = Math.abs(cols - rows);
-                    const score = diff * 100 + rows * 0.1; // Mais quadrado = menor diff
-                    
-                    if(score < bestScore){
-                        bestScore = score;
-                        bestCols = cols;
-                        bestRows = rows;
-                    }
-                }
-            }
-            
-            // PRIORIDADE 3: Ceil (se não achou divisores bons), mais quadrado
-            for(let cols=1; cols<=maxCols; cols++){
-                const rows = Math.ceil(n / cols);
-                const diff = Math.abs(cols - rows);
-                const score = diff * 100 + rows * 0.1;
-                
-                if(score < bestScore){
-                    bestScore = score;
-                    bestCols = cols;
-                    bestRows = rows;
-                }
-            }
-            
-            return {cols: bestCols, rows: bestRows};
+    function getBestGrid(n) {
+        // 1. REGRA: Quadrados Perfeitos (Sempre N x N, sem limite de colunas/linhas)
+        const sqrt = Math.sqrt(n);
+        if (Number.isInteger(sqrt)) {
+            return { cols: sqrt, rows: sqrt };
         }
 
-        const {cols, rows} = getBestGrid(total);
+        // 2. LÓGICA PADRÃO: Tentar divisores exatos respeitando o limite de 12 colunas
+        const maxCols = 12;
+        let bestExact = null;
+        for (let c = 2; c <= maxCols; c++) {
+            if (n % c === 0) {
+                const r = n / c;
+                const diff = Math.abs(c - r);
+                if (!bestExact || diff < bestExact.diff) {
+                    bestExact = { cols: c, rows: r, diff: diff };
+                }
+            }
+        }
 
-        const cw=(size-20)/cols;
-        const ch=(size-20)/rows;
+        // 3. REGRA DE EXCEÇÃO: Evitar "tripas" verticais
+        // Se a melhor divisão tiver mais de 12 linhas E poucas colunas (<= 4), tratamos como primo
+        if (bestExact && bestExact.rows > 12 && bestExact.cols <= 4) {
+            bestExact = null; 
+        }
+        
+        if (bestExact) return { cols: bestExact.cols, rows: bestExact.rows };
+        
+        // 4. LÓGICA DE APROXIMAÇÃO (Primos ou grids que excederam 12 linhas com colunas baixas)
+        // Aqui também garantimos que a aproximação não gere mais de 12 colunas, a menos que seja quadrado perfeito
+        let c = Math.ceil(Math.sqrt(n));
+        // Se a aproximação passar de 12 colunas e não for quadrado perfeito, limitamos a 12
+        if (c > 12) c = 12; 
+        
+        const r = Math.ceil(n / c);
+        return { cols: c, rows: r };
+    }
 
-        for(let i=0;i<total;i++){
-            const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    if (shape === 'rect') {
+        const { cols, rows } = getBestGrid(total);
+        
+        let cw = (width - padding) / cols;
+        let ch = (height - padding) / rows;
 
-            rect.setAttribute('x',10+(i%cols)*cw);
-            rect.setAttribute('y',10+Math.floor(i/cols)*ch);
-            rect.setAttribute('width',cw-3);
-            rect.setAttribute('height',ch-3);
-            rect.setAttribute('fill',i<filled?color:offColor);
-            rect.setAttribute('stroke','#333');
-            rect.setAttribute('stroke-width','2');
+        // Ajuste dinâmico de tamanho para respeitar o minBlockSize
+        let finalWidth = width;
+        if (cw < minBlockSize) {
+            cw = minBlockSize;
+            finalWidth = (cols * cw) + padding;
+        }
+
+        let finalHeight = height;
+        if (ch < minBlockSize) {
+            ch = minBlockSize;
+            finalHeight = (rows * ch) + padding;
+        }
+
+        svg.setAttribute('width', finalWidth);
+        svg.setAttribute('height', finalHeight);
+        svg.setAttribute('viewBox', `0 0 ${finalWidth} ${finalHeight}`);
+
+        for (let i = 0; i < total; i++) {
+            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+            const col = i % cols;
+            const row = Math.floor(i / cols);
+
+            rect.setAttribute('x', (padding / 2) + col * cw);
+            rect.setAttribute('y', (padding / 2) + row * ch);
+            rect.setAttribute('width', Math.max(0, cw - 4));
+            rect.setAttribute('height', Math.max(0, ch - 4));
+            rect.setAttribute('fill', i < filled ? color : offColor);
+            rect.setAttribute('stroke', '#333');
+            rect.setAttribute('stroke-width', '1.5');
+            rect.setAttribute('rx', '3'); 
 
             svg.appendChild(rect);
         }
-
     } else {
+        // Lógica circular original
+        svg.setAttribute('width', width);
+        svg.setAttribute('height', height);
+        const r = width * 0.42;
+        const cy = height / 2;
 
-        const ang=(2*Math.PI)/total;
-
-        for(let i=0;i<total;i++){
-            const sA=i*ang-Math.PI/2;
-            const eA=(i+1)*ang-Math.PI/2;
-
-            const p=document.createElementNS('http://www.w3.org/2000/svg','path');
-            let d=`M ${cx} ${cy} `;
-
-            if(shape==='star'){
-                const outerR = r;
-                const innerR = r * 0.45;
-                const midA = (sA + eA)/2;
-
-                const x1 = cx + outerR * Math.cos(sA);
-                const y1 = cy + outerR * Math.sin(sA);
-
-                const x2 = cx + innerR * Math.cos(midA);
-                const y2 = cy + innerR * Math.sin(midA);
-
-                const x3 = cx + outerR * Math.cos(eA);
-                const y3 = cy + outerR * Math.sin(eA);
-
-                d += `
-                    L ${x1} ${y1}
-                    L ${x2} ${y2}
-                    L ${x3} ${y3}
-                    Z
-                `;
-
-            } else if(shape==='poly'){
-                d += `
-                    L ${cx+r*Math.cos(sA)} ${cy+r*Math.sin(sA)}
-                    L ${cx+r*Math.cos(eA)} ${cy+r*Math.sin(eA)}
-                    Z
-                `;
-            } else {
-                d += `
-                    L ${cx+r*Math.cos(sA)} ${cy+r*Math.sin(sA)}
-                    A ${r} ${r} 0 0 1 ${cx+r*Math.cos(eA)} ${cy+r*Math.sin(eA)}
-                    Z
-                `;
+        if (total === 1) {
+            const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            c.setAttribute('cx', cx); c.setAttribute('cy', cy); c.setAttribute('r', r);
+            c.setAttribute('fill', filled >= 1 ? color : offColor);
+            c.setAttribute('stroke', '#333'); c.setAttribute('stroke-width', '2');
+            svg.appendChild(c);
+        } else {
+            const ang = (2 * Math.PI) / total;
+            for (let i = 0; i < total; i++) {
+                const sA = i * ang - Math.PI / 2;
+                const eA = (i + 1) * ang - Math.PI / 2;
+                const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+                let d = `M ${cx} ${cy} `;
+                if (shape === 'star') {
+                    const outerR = r, innerR = r * 0.45, midA = (sA + eA) / 2;
+                    d += `L ${cx + outerR * Math.cos(sA)} ${cy + outerR * Math.sin(sA)} L ${cx + innerR * Math.cos(midA)} ${cy + innerR * Math.sin(midA)} L ${cx + outerR * Math.cos(eA)} ${cy + outerR * Math.sin(eA)} Z`;
+                } else if (shape === 'poly') {
+                    d += `L ${cx + r * Math.cos(sA)} ${cy + r * Math.sin(sA)} L ${cx + r * Math.cos(eA)} ${cy + r * Math.sin(eA)} Z`;
+                } else {
+                    d += `L ${cx + r * Math.cos(sA)} ${cy + r * Math.sin(sA)} A ${r} ${r} 0 0 1 ${cx + r * Math.cos(eA)} ${cy + r * Math.sin(eA)} Z`;
+                }
+                p.setAttribute('d', d);
+                p.setAttribute('fill', i < filled ? color : offColor);
+                p.setAttribute('stroke', '#333'); p.setAttribute('stroke-width', '2');
+                svg.appendChild(p);
             }
-
-            p.setAttribute('d',d);
-            p.setAttribute('fill',i<filled?color:offColor);
-            p.setAttribute('stroke','#333');
-            p.setAttribute('stroke-width','2');
-
-            svg.appendChild(p);
         }
     }
-
     return svg;
 }
-
 function createFractionBlock(num,den,shape,color,opTop=null,opBot=null,hideLabel=false){
     const group=document.createElement('div');group.className='fraction-group';
     const stack=document.createElement('div');stack.className='unit-stack';
