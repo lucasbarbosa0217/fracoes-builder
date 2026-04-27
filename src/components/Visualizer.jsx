@@ -4,7 +4,7 @@ import { estimateImageCount } from '../utils'
 import { useCapture } from '../hooks/useCapture'
 
 export default function Visualizer({ thickness, numeratorFill, unfilledFill, borderFill, globalHideLabel }) {
-  const [num, setNum] = useState(11) 
+  const [num, setNum] = useState(11)
   const [den, setDen] = useState(4)
   const [shape, setShape] = useState('rect')
   const [mixedMode, setMixedMode] = useState(false)
@@ -30,22 +30,52 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
 
   return (
     <>
+      <style>{`
+        .result-row {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-top: 10px;
+        }
+        .custom-fraction-label {
+          font-family: sans-serif;
+          font-size: 1.5rem;
+          font-weight: bold;
+          color: #333;
+          margin-left: 10px;
+        }
+        .fraction-inputs {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+        }
+        .controls {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 15px;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+        .input-group { display: flex; align-items: center; gap: 5px; }
+      `}</style>
+
       <div className="controls">
         <div className="input-group">
           {mixedMode ? (
             <>
-              <input type="number" min="0" value={integerPart} onChange={e => handleIntChange(e.target.value)} />
+              <input type="number" min="0" value={integerPart} onChange={e => handleIntChange(e.target.value)} style={{width: '50px'}} />
               <div className="fraction-inputs">
-                <input type="number" min="0" value={remainderPart} onChange={e => handleMixedNumChange(e.target.value)} />
-                <span className="separator">/</span>
-                <input type="number" min="1" value={den} onChange={e => handleMixedDenChange(e.target.value)} />
+                <input type="number" min="0" value={remainderPart} onChange={e => handleMixedNumChange(e.target.value)} style={{width: '50px'}} />
+                <span>/</span>
+                <input type="number" min="1" value={den} onChange={e => handleMixedDenChange(e.target.value)} style={{width: '50px'}} />
               </div>
             </>
           ) : (
             <>
-              <input type="number" value={num} onChange={e => handleStandardNumChange(e.target.value)} />
+              <input type="number" value={num} onChange={e => handleStandardNumChange(e.target.value)} style={{width: '50px'}} />
               <span>/</span>
-              <input type="number" min="1" value={den} onChange={e => handleDenChange(e.target.value)} />
+              <input type="number" min="1" value={den} onChange={e => handleDenChange(e.target.value)} style={{width: '50px'}} />
             </>
           )}
         </div>
@@ -71,23 +101,15 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
 
       <div className="scroll-wrapper">
         <div className="capture-zone" ref={captureRef}>
-          {/* Exibição do texto da fração (Rótulo no Canvas) */}
-          {mixedMode && (
-            <div className="mixed-label-display">
-              {integerPart > 0 && <span>{integerPart} </span>}
-              {remainderPart > 0 && <span>{remainderPart}/{den}</span>}
-            </div>
-          )}
-
           <div className="result-row">
             {mixedMode ? (
               <>
                 {Array.from({ length: integerPart }).map((_, i) => (
                   <FractionBlock
                     key={`full-${i}`}
-                    num={1} den={1} // Renderiza bloco cheio 1/1
+                    num={1} den={1}
                     shape={shape} numeratorFill={numeratorFill} unfilledFill={unfilledFill}
-                    hideLabel={true} // Oculta o rótulo original
+                    hideLabel={true}
                     thickness={thickness} borderFill={borderFill}
                   />
                 ))}
@@ -96,9 +118,17 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
                     key="remainder"
                     num={remainderPart} den={den}
                     shape={shape} numeratorFill={numeratorFill} unfilledFill={unfilledFill}
-                    hideLabel={true} // Oculta o rótulo original
+                    hideLabel={true}
                     thickness={thickness} borderFill={borderFill}
                   />
+                )}
+                
+                {/* Rótulo ocultado condicionalmente por globalHideLabel */}
+                {!globalHideLabel && (
+                  <div className="custom-fraction-label">
+                    {integerPart > 0 && <span>{integerPart} </span>}
+                    {remainderPart > 0 && <span>{remainderPart}/{den}</span>}
+                  </div>
                 )}
               </>
             ) : (
