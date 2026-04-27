@@ -38,13 +38,46 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
           gap: 10px;
           margin-top: 10px;
         }
+        
+        /* Estilização da Fração Visual */
         .custom-fraction-label {
-          font-family: sans-serif;
-          font-size: 1.5rem;
+          margin-left: 15px;
+        }
+
+        .fraction-display {
+          display: inline-flex;
+          align-items: center;
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+          font-size: 1.8rem;
           font-weight: bold;
           color: #333;
-          margin-left: 10px;
         }
+
+        .integer-part {
+          margin-right: 8px;
+        }
+
+        .fraction-stacked {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          line-height: 1.1;
+        }
+
+        .fraction-numerator {
+          border-bottom: 2px solid #333;
+          padding: 0 4px;
+          min-width: 20px;
+          text-align: center;
+        }
+
+        .fraction-denominator {
+          padding: 0 4px;
+          min-width: 20px;
+          text-align: center;
+        }
+
         .fraction-inputs {
           display: flex;
           align-items: center;
@@ -58,6 +91,7 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
           margin-bottom: 20px;
         }
         .input-group { display: flex; align-items: center; gap: 5px; }
+        .warn-badge { color: red; font-weight: bold; font-size: 0.8rem; }
       `}</style>
 
       <div className="controls">
@@ -125,8 +159,17 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
                 
                 {!globalHideLabel && (
                   <div className="custom-fraction-label">
-                    {integerPart > 0 && <span>{integerPart} </span>}
-                    {remainderPart > 0 && <span>{remainderPart}/{den}</span>}
+                    <div className="fraction-display">
+                      {integerPart > 0 && (
+                        <span className="integer-part">{integerPart}</span>
+                      )}
+                      {remainderPart > 0 && (
+                        <div className="fraction-stacked">
+                          <span className="fraction-numerator">{remainderPart}</span>
+                          <span className="fraction-denominator">{den}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </>
