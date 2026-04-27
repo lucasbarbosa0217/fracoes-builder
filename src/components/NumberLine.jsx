@@ -138,7 +138,7 @@ export default function NumberLine({ thickness, numeratorFill, unfilledFill, bor
               onChange={e => updateFraction(i, 'den', e.target.value)}
             />
             {fractions.length > 1 && (
-              <button className="btn btn-remove" onClick={() => removeFraction(i)}>Remover</button>
+              <button className="btn-remove" onClick={() => removeFraction(i)}>Remover</button>
             )}
           </div>
         ))}
