@@ -71,7 +71,7 @@ export function renderRetaOnCanvas(canvas, fractions, localHide, globalHide, thi
       for (let j = 1; j < mmc; j++) {
         const x = baseX + (j / mmc) * step
         ctx.beginPath(); ctx.moveTo(x, y - 8); ctx.lineTo(x, y + 8)
-        ctx.strokeStyle = '#bbb'; ctx.lineWidth = 1; ctx.stroke()
+        ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke()
       }
     }
   }
