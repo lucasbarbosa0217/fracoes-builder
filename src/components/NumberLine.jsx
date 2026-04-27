@@ -2,11 +2,20 @@ import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { gcd, lcm, POINT_COLORS } from '../utils'
 import { useCapture } from '../hooks/useCapture'
 
-function drawFractionLabel(ctx, num, den, x, y, color, hide, thickness = 2) {
-  if (hide) {
-    ctx.font = 'bold 20px Arial'; ctx.fillStyle = color; ctx.textAlign = 'center'
-    ctx.fillText('?', x, y); return
+function drawFractionLabel(ctx, num, den, x, y, color, localHide, globalHide, thickness = 2) {
+  // 1. O Global Hide é o "Master Switch". Se ativo, não desenha nada.
+  if (globalHide) return;
+
+  // 2. Se o Global Hide estiver desligado, verificamos o Local (Quiz Mode).
+  if (localHide) {
+    ctx.font = 'bold 20px Arial'; 
+    ctx.fillStyle = color; 
+    ctx.textAlign = 'center';
+    ctx.fillText('?', x, y); 
+    return;
   }
+
+  // 3. Comportamento padrão (mostra a fração)
   const ns = String(num), ds = String(den)
   ctx.font = 'bold 16px Arial'; ctx.fillStyle = color; ctx.textAlign = 'center'
   ctx.fillText(ns, x, y - 4)
@@ -16,7 +25,7 @@ function drawFractionLabel(ctx, num, den, x, y, color, hide, thickness = 2) {
   ctx.fillText(ds, x, y + 18)
 }
 
-export function renderRetaOnCanvas(canvas, fractions, hideLabels, thickness = 2, borderColor = '#333') {
+export function renderRetaOnCanvas(canvas, fractions, localHide, globalHide, thickness = 2, borderColor = '#333') {
   const ctx = canvas.getContext('2d')
   ctx.clearRect(0, 0, canvas.width, canvas.height)
 
@@ -75,7 +84,9 @@ export function renderRetaOnCanvas(canvas, fractions, hideLabels, thickness = 2,
     ctx.beginPath(); ctx.arc(posX, y, 8, 0, Math.PI * 2)
     ctx.fillStyle = col; ctx.fill()
     ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke()
-    drawFractionLabel(ctx, f.num, f.den, posX, y - 30, col, hideLabels, thickness)
+    
+    // Passando os dois estados para a função
+    drawFractionLabel(ctx, f.num, f.den, posX, y - 30, col, localHide, globalHide, thickness)
   })
 }
 
@@ -88,9 +99,9 @@ export default function NumberLine({ thickness, numeratorFill, unfilledFill, bor
 
   const redraw = useCallback(() => {
     if (canvasRef.current) {
-      renderRetaOnCanvas(canvasRef.current, fractions, hideLabels, thickness, borderFill)
+      renderRetaOnCanvas(canvasRef.current, fractions, hideLabels, globalHideLabel, thickness, borderFill)
     }
-  }, [fractions, hideLabels, thickness, borderFill])
+  }, [fractions, hideLabels, globalHideLabel, thickness, borderFill])
 
   useEffect(() => { redraw() }, [redraw])
 
@@ -108,9 +119,14 @@ export default function NumberLine({ thickness, numeratorFill, unfilledFill, bor
   return (
     <>
       <div className="controls">
-        <label className="checkbox-label">
-          <input type="checkbox" checked={hideLabels} onChange={e => setHideLabels(e.target.checked)} />
-          Ocultar frações
+        <label className="checkbox-label" style={{ opacity: globalHideLabel ? 0.5 : 1 }}>
+          <input 
+            type="checkbox" 
+            checked={hideLabels} 
+            onChange={e => setHideLabels(e.target.checked)} 
+            disabled={globalHideLabel} 
+          />
+          Ocultar frações (Modo Quiz)
         </label>
       </div>
 
