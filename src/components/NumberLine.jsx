@@ -118,17 +118,7 @@ export default function NumberLine({ thickness, numeratorFill, unfilledFill, bor
 
   return (
     <>
-      <div className="controls">
-        <label className="checkbox-label" style={{ opacity: globalHideLabel ? 0.5 : 1 }}>
-          <input 
-            type="checkbox" 
-            checked={hideLabels} 
-            onChange={e => setHideLabels(e.target.checked)} 
-            disabled={globalHideLabel} 
-          />
-          Ocultar frações (Modo Quiz)
-        </label>
-      </div>
+    
 
       <div className="reta-fractions-list">
         {fractions.map((f, i) => (
