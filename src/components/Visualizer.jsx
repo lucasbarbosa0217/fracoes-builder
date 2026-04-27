@@ -4,7 +4,7 @@ import { estimateImageCount } from '../utils'
 import { useCapture } from '../hooks/useCapture'
 
 export default function Visualizer({ thickness, numeratorFill, unfilledFill, borderFill, globalHideLabel }) {
-  const [num, setNum] = useState(11) // Exemplo: 11/4
+  const [num, setNum] = useState(11) 
   const [den, setDen] = useState(4)
   const [shape, setShape] = useState('rect')
   const [mixedMode, setMixedMode] = useState(false)
@@ -15,29 +15,13 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
   const count = estimateImageCount(num, den)
   const warnHeavy = count > 12
 
-  // Cálculos para o modo misto
   const integerPart = Math.floor(num / den)
   const remainderPart = num % den
 
-  // Handlers para o modo misto
-  const handleIntChange = (val) => {
-    const i = parseInt(val) || 0
-    setNum(i * den + remainderPart)
-  }
-
-  const handleMixedNumChange = (val) => {
-    const n = parseInt(val) || 0
-    setNum(integerPart * den + n)
-  }
-
-  const handleMixedDenChange = (val) => {
-    const d = Math.max(1, parseInt(val) || 1)
-    setDen(d)
-  }
-
-  // Handler padrão
+  const handleIntChange = (val) => setNum((parseInt(val) || 0) * den + remainderPart)
+  const handleMixedNumChange = (val) => setNum(integerPart * den + (parseInt(val) || 0))
+  const handleMixedDenChange = (val) => setDen(Math.max(1, parseInt(val) || 1))
   const handleStandardNumChange = (val) => setNum(parseInt(val) || 0)
-  
   const handleDenChange = (val) => {
     const d = Math.max(1, parseInt(val) || 1)
     setDen(d)
@@ -47,7 +31,6 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
   return (
     <>
       <div className="controls">
-        {/* Renderização Condicional dos Inputs */}
         <div className="input-group">
           {mixedMode ? (
             <>
@@ -88,15 +71,23 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
 
       <div className="scroll-wrapper">
         <div className="capture-zone" ref={captureRef}>
+          {/* Exibição do texto da fração (Rótulo no Canvas) */}
+          {mixedMode && (
+            <div className="mixed-label-display">
+              {integerPart > 0 && <span>{integerPart} </span>}
+              {remainderPart > 0 && <span>{remainderPart}/{den}</span>}
+            </div>
+          )}
+
           <div className="result-row">
             {mixedMode ? (
               <>
                 {Array.from({ length: integerPart }).map((_, i) => (
                   <FractionBlock
                     key={`full-${i}`}
-                    num={den} den={den}
+                    num={1} den={1} // Renderiza bloco cheio 1/1
                     shape={shape} numeratorFill={numeratorFill} unfilledFill={unfilledFill}
-                    hideLabel={globalHideLabel}
+                    hideLabel={true} // Oculta o rótulo original
                     thickness={thickness} borderFill={borderFill}
                   />
                 ))}
@@ -105,7 +96,7 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
                     key="remainder"
                     num={remainderPart} den={den}
                     shape={shape} numeratorFill={numeratorFill} unfilledFill={unfilledFill}
-                    hideLabel={globalHideLabel}
+                    hideLabel={true} // Oculta o rótulo original
                     thickness={thickness} borderFill={borderFill}
                   />
                 )}
