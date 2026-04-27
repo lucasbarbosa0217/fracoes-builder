@@ -3,13 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Gerador de Frações</title>
+    <meta name="description" content="Ferramenta educacional interativa para visualizar, calcular e aprender sobre frações. Inclui visualizador, calculadora, equivalentes, reta real e quiz." />
+    <meta name="keywords" content="frações, educação, matemática, ferramenta educacional, visualização, quiz" />
+    <meta name="author" content="Frações Builder" />
+    <meta property="og:title" content="Frações - Ferramenta Educacional Interativa" />
+    <meta property="og:description" content="Aprenda frações com visualizações interativas, calculadora e quiz" />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#4B6AFF" />
+    <meta name="robots" content="index, follow" />
+    <title>Frações - Visualize, Calcule e Aprenda</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75' font-weight='bold' fill='%234B6AFF'>½</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Baloo+2:wght@400;700;900&display=swap" rel="stylesheet" />
+    <style>
+      /* Skip to main content link */
+      .skip-link {
+        position: absolute;
+        top: -40px;
+        left: 0;
+        background: #4B6AFF;
+        color: white;
+        padding: 8px 16px;
+        text-decoration: none;
+        z-index: 9999;
+        border-radius: 0 0 4px 0;
+      }
+      .skip-link:focus {
+        top: 0;
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <a href="#main" class="skip-link">Pular para conteúdo principal</a>
+    <div id="root" role="application" aria-label="Aplicação de frações"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

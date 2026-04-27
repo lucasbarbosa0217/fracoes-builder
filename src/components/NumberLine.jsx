@@ -118,39 +118,48 @@ export default function NumberLine({ thickness, numeratorFill, unfilledFill, bor
 
   return (
     <>
-    
-
-      <div className="reta-fractions-list">
+      <div className="reta-fractions-list" role="group" aria-label="Gerenciar frações da reta real">
         {fractions.map((f, i) => (
           <div key={i} className="reta-fraction-row">
             <span className="color-dot" style={{ background: POINT_COLORS[i % POINT_COLORS.length] }} />
-            <label style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--muted)' }}>Fração {i + 1}:</label>
+            <label htmlFor={`reta-num-${i}`} style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--muted)' }}>
+              Fração {i + 1}:
+            </label>
             <input
+              id={`reta-num-${i}`}
               type="number"
               value={f.num}
               onChange={e => updateFraction(i, 'num', e.target.value)}
+              aria-label={`Numerador da fração ${i + 1}`}
             />
-            <span style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>/</span>
+            <span aria-hidden="true" style={{ fontWeight: 'bold', fontSize: '1.2rem' }}>/</span>
+            <label htmlFor={`reta-den-${i}`} style={{ display: 'none' }}>Denominador da fração {i + 1}</label>
             <input
+              id={`reta-den-${i}`}
               type="number"
               value={f.den}
               min="1"
               onChange={e => updateFraction(i, 'den', e.target.value)}
+              aria-label={`Denominador da fração ${i + 1}`}
             />
             {fractions.length > 1 && (
-              <button className="btn-remove" onClick={() => removeFraction(i)}>Remover</button>
+              <button className="btn-remove" onClick={() => removeFraction(i)} aria-label={`Remover fração ${i + 1}`}>
+                Remover
+              </button>
             )}
           </div>
         ))}
       </div>
 
-      <div style={{ marginBottom: '16px' }}>
-        <button className="btn btn-add" onClick={addFraction}>+ Adicionar fração</button>
+      <div className="btn-group" style={{ marginBottom: '16px' }}>
+        <button className="btn btn-add" onClick={addFraction} aria-label="Adicionar nova fração">
+          + Adicionar fração
+        </button>
       </div>
 
-      <div className="scroll-wrapper">
+      <div className="scroll-wrapper" role="region" aria-label="Visualização da reta real">
         <div className="capture-zone" ref={captureRef} style={{ display: 'block' }}>
-          <canvas ref={canvasRef} width={900} height={240} />
+          <canvas ref={canvasRef} width={900} height={240} aria-label="Reta real com frações" />
         </div>
       </div>
 

@@ -3,8 +3,8 @@ import FractionBlock from './FractionBlock'
 import { gcd, estimateImageCount } from '../utils'
 import { useCapture } from '../hooks/useCapture'
 
-function MathSymbol({ children }) {
-  return <div className="math-symbol">{children}</div>
+function MathSymbol({ children, ariaLabel }) {
+  return <div className="math-symbol" aria-label={ariaLabel} role="img">{children}</div>
 }
 
 export default function Equivalent({ thickness, numeratorFill, unfilledFill, borderFill, globalHideLabel }) {
@@ -38,21 +38,41 @@ export default function Equivalent({ thickness, numeratorFill, unfilledFill, bor
     ? { top: `×${multFactor}`, bot: `×${multFactor}` }
     : { top: `÷${divVal}`, bot: `÷${divVal}` }
 
+  const summaryText = activeMode === 'mult'
+    ? `Multiplicando a fração original por ${multFactor}`
+    : `Simplificando a fração original por ${divVal}`
+
   return (
     <>
-      <div className="controls">
+      <div className="controls" role="group" aria-labelledby="equivalent-controls">
+        <div id="equivalent-controls" style={{ display: 'none' }}>Controles de frações equivalentes</div>
         <div className="input-group">
-          <input type="number" value={num} onChange={e => setNum(parseInt(e.target.value) || 0)} />
-          <span>/</span>
-          <input type="number" value={den} min="1" onChange={e => setDen(Math.max(1, parseInt(e.target.value) || 1))} />
+          <label htmlFor="equiv-num" style={{ display: 'none' }}>Numerador</label>
+          <input
+            id="equiv-num"
+            type="number"
+            value={num}
+            onChange={e => setNum(parseInt(e.target.value) || 0)}
+            aria-label="Numerador da fração"
+          />
+          <span aria-hidden="true">/</span>
+          <label htmlFor="equiv-den" style={{ display: 'none' }}>Denominador</label>
+          <input
+            id="equiv-den"
+            type="number"
+            value={den}
+            min="1"
+            onChange={e => setDen(Math.max(1, parseInt(e.target.value) || 1))}
+            aria-label="Denominador da fração"
+          />
         </div>
 
-        <div className="switch-container">
-          <button className={`switch-btn ${activeMode === 'mult' ? 'active' : ''}`} onClick={() => setMode('mult')}>
+        <div className="switch-container" role="group" aria-label="Alternar modo de equivalência">
+          <button className={`switch-btn ${activeMode === 'mult' ? 'active' : ''}`} onClick={() => setMode('mult')} aria-pressed={activeMode === 'mult'}>
             Multiplicar
           </button>
           {!isIrreducible && (
-            <button className={`switch-btn ${activeMode === 'div' ? 'active' : ''}`} onClick={() => setMode('div')}>
+            <button className={`switch-btn ${activeMode === 'div' ? 'active' : ''}`} onClick={() => setMode('div')} aria-pressed={activeMode === 'div'}>
               Simplificar
             </button>
           )}
@@ -60,19 +80,40 @@ export default function Equivalent({ thickness, numeratorFill, unfilledFill, bor
 
         {activeMode === 'mult' ? (
           <div className="slider-wrapper">
-            <span style={{ whiteSpace: 'nowrap' }}>Fator: <strong>{multFactor}</strong></span>
-            <input type="range" min="1" max="10" value={multFactor} onChange={e => setMultFactor(Number(e.target.value))} />
+            <label htmlFor="mult-factor">Fator: <strong>{multFactor}</strong></label>
+            <input
+              id="mult-factor"
+              type="range"
+              min="1"
+              max="10"
+              value={multFactor}
+              onChange={e => setMultFactor(Number(e.target.value))}
+              aria-label="Fator de multiplicação"
+            />
           </div>
         ) : (
           <div className="slider-wrapper">
-            <span style={{ whiteSpace: 'nowrap' }}>Divisor: <strong>{divVal}</strong></span>
-            <input type="range" min="0" max={divisors.length - 1} value={safeDivIdx} onChange={e => setDivIdx(Number(e.target.value))} />
+            <label htmlFor="div-index">Divisor: <strong>{divVal}</strong></label>
+            <input
+              id="div-index"
+              type="range"
+              min="0"
+              max={divisors.length - 1}
+              value={safeDivIdx}
+              onChange={e => setDivIdx(Number(e.target.value))}
+              aria-label="Selecionar divisor para simplificação"
+            />
           </div>
         )}
 
         {isIrreducible && <span className="info-tag">Irredutível</span>}
 
         {warnHeavy && <span className="warn-badge">⚠ Muitas imagens!</span>}
+      </div>
+
+      <div className="result-summary" aria-live="polite" aria-atomic="true">
+        <p>{summaryText}</p>
+        <p>Resultado: {newNum}/{newDen}</p>
       </div>
 
       <div className="scroll-wrapper">

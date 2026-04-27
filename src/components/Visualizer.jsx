@@ -123,7 +123,6 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
                   />
                 )}
                 
-                {/* Rótulo ocultado condicionalmente por globalHideLabel */}
                 {!globalHideLabel && (
                   <div className="custom-fraction-label">
                     {integerPart > 0 && <span>{integerPart} </span>}

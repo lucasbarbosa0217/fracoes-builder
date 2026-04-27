@@ -107,10 +107,11 @@ export default function Quiz({ thickness, numeratorFill, unfilledFill, borderFil
 
   return (
     <>
-      <div className="quiz-config">
+      <div className="quiz-config" role="form" aria-labelledby="quiz-settings-title">
         <div>
-          <div className="section-title">Tipo de Quiz</div>
-          <select value={quizType} onChange={e => setQuizType(e.target.value)}>
+          <div className="section-title" id="quiz-settings-title">Tipo de Quiz</div>
+          <label htmlFor="quiz-type-select" className="sr-only">Selecionar tipo de quiz</label>
+          <select id="quiz-type-select" value={quizType} onChange={e => setQuizType(e.target.value)} aria-label="Selecione o tipo de quiz">
             <option value="visual">Identificar (Visual)</option>
             <option value="reta">Identificar (Reta Real)</option>
             <option value="equiv">Frações Equivalentes</option>
@@ -118,7 +119,8 @@ export default function Quiz({ thickness, numeratorFill, unfilledFill, borderFil
         </div>
         <div>
           <div className="section-title">Dificuldade</div>
-          <select value={difficulty} onChange={e => setDifficulty(e.target.value)}>
+          <label htmlFor="difficulty-select" className="sr-only">Selecionar dificuldade</label>
+          <select id="difficulty-select" value={difficulty} onChange={e => setDifficulty(e.target.value)} aria-label="Selecione a dificuldade">
             <option value="easy">Fácil (den ≤ 4)</option>
             <option value="med">Médio (den ≤ 8)</option>
             <option value="hard">Difícil (den ≤ 12)</option>
@@ -158,13 +160,16 @@ export default function Quiz({ thickness, numeratorFill, unfilledFill, borderFil
           {questionText}
         </div>
 
-        <div className="quiz-options">
+        <div className="quiz-options" role="list" aria-label="Opções de resposta">
           {options.map((opt, idx) => (
             <button
               key={idx}
               className="quiz-option-btn"
               style={getBtnStyle(opt, idx)}
               onClick={() => handleAnswer(opt, idx)}
+              aria-pressed={answered && selectedIdx === idx}
+              aria-label={`Opção ${idx + 1}: ${opt.num} sobre ${opt.den}`}
+              role="listitem"
             >
               <div className="quiz-option-inner">
                 {opt.num}
@@ -174,7 +179,7 @@ export default function Quiz({ thickness, numeratorFill, unfilledFill, borderFil
           ))}
         </div>
 
-        <div className="quiz-feedback">
+        <div className="quiz-feedback" aria-live="polite" aria-atomic="true">
           {feedback === 'correct' && <span style={{ color: '#00b894' }}>✓ Correto! 🎉</span>}
           {feedback === 'wrong' && (
             <span style={{ color: '#d63031' }}>
