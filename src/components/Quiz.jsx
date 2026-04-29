@@ -166,7 +166,8 @@ export default function Quiz({ thickness, numeratorFill, unfilledFill, borderFil
               key={idx}
               className="quiz-option-btn"
               style={getBtnStyle(opt, idx)}
-              onClick={() => handleAnswer(opt, idx)}
+              onClick=
+              {() => handleAnswer(opt, idx)}
               aria-pressed={answered && selectedIdx === idx}
               aria-label={`Opção ${idx + 1}: ${opt.num} sobre ${opt.den}`}
               role="listitem"

@@ -30,86 +30,22 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
 
   return (
     <>
-      <style>{`
-        .result-row {
-          display: flex;
-          align-items: center;
-          flex-wrap: wrap;
-          gap: 10px;
-          margin-top: 10px;
-        }
-        
-        /* Estilização da Fração Visual */
-        .custom-fraction-label {
-          margin-left: 15px;
-        }
-
-        .fraction-display {
-          display: inline-flex;
-          align-items: center;
-          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-          font-size: 1.8rem;
-          font-weight: bold;
-          color: #333;
-        }
-
-        .integer-part {
-          margin-right: 8px;
-        }
-
-        .fraction-stacked {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          line-height: 1.1;
-        }
-
-        .fraction-numerator {
-          border-bottom: 2px solid #333;
-          padding: 0 4px;
-          min-width: 20px;
-          text-align: center;
-        }
-
-        .fraction-denominator {
-          padding: 0 4px;
-          min-width: 20px;
-          text-align: center;
-        }
-
-        .fraction-inputs {
-          display: flex;
-          align-items: center;
-          gap: 5px;
-        }
-        .controls {
-          display: flex;
-          flex-wrap: wrap;
-          gap: 15px;
-          align-items: center;
-          margin-bottom: 20px;
-        }
-        .input-group { display: flex; align-items: center; gap: 5px; }
-        .warn-badge { color: red; font-weight: bold; font-size: 0.8rem; }
-      `}</style>
-
       <div className="controls">
         <div className="input-group">
           {mixedMode ? (
             <>
-              <input type="number" min="0" value={integerPart} onChange={e => handleIntChange(e.target.value)} style={{width: '50px'}} />
+              <input className="small-number" type="number" min="0" value={integerPart} onChange={e => handleIntChange(e.target.value)} />
               <div className="fraction-inputs">
-                <input type="number" min="0" value={remainderPart} onChange={e => handleMixedNumChange(e.target.value)} style={{width: '50px'}} />
+                <input className="small-number" type="number" min="0" value={remainderPart} onChange={e => handleMixedNumChange(e.target.value)} />
                 <span>/</span>
-                <input type="number" min="1" value={den} onChange={e => handleMixedDenChange(e.target.value)} style={{width: '50px'}} />
+                <input className="small-number" type="number" min="1" value={den} onChange={e => handleMixedDenChange(e.target.value)} />
               </div>
             </>
           ) : (
             <>
-              <input type="number" value={num} onChange={e => handleStandardNumChange(e.target.value)} style={{width: '50px'}} />
+              <input className="small-number" type="number" value={num} onChange={e => handleStandardNumChange(e.target.value)} />
               <span>/</span>
-              <input type="number" min="1" value={den} onChange={e => handleDenChange(e.target.value)} style={{width: '50px'}} />
+              <input className="small-number" type="number" min="1" value={den} onChange={e => handleDenChange(e.target.value)} />
             </>
           )}
         </div>
