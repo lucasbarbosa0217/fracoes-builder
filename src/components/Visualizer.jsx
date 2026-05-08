@@ -94,16 +94,15 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
                 )}
                 
                 {!globalHideLabel && (
-                  <div className="math-label">
-                    <div className="unit-stack">
+                  <div className="custom-fraction-label">
+                    <div className="fraction-display">
                       {integerPart > 0 && (
-                        <span className="integer-display">{integerPart}</span>
+                        <span className="integer-part">{integerPart}</span>
                       )}
                       {remainderPart > 0 && (
-                        <div className="fraction-column">
-                          <div className="num">{remainderPart}</div>
-                          <div className="fraction-line"></div>
-                          <div className="den">{den}</div>
+                        <div className="fraction-stacked">
+                          <span className="fraction-numerator">{remainderPart}</span>
+                          <span className="fraction-denominator">{den}</span>
                         </div>
                       )}
                     </div>
