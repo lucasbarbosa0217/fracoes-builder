@@ -93,16 +93,18 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
                   />
                 )}
                 
+                {/* Rótulo Ajustado para o modo Misto */}
                 {!globalHideLabel && (
-                  <div className="custom-fraction-label">
-                    <div className="fraction-display">
+                  <div className="math-label">
+                    <div className="unit-stack">
                       {integerPart > 0 && (
-                        <span className="integer-part">{integerPart}</span>
+                        <span className="integer-display">{integerPart}</span>
                       )}
                       {remainderPart > 0 && (
-                        <div className="fraction-stacked">
-                          <span className="fraction-numerator">{remainderPart}</span>
-                          <span className="fraction-denominator">{den}</span>
+                        <div className="fraction-column">
+                          <div className="num">{remainderPart}</div>
+                          <div className="fraction-line"></div>
+                          <div className="den">{den}</div>
                         </div>
                       )}
                     </div>
