@@ -671,25 +671,17 @@ input[type="range"]:focus-visible {
 }
 
 .math-label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
+  text-align: center;
   font-weight: 900;
-  font-size: 36px; /* Ajustado para visibilidade */
-  color: var(--text);
-  line-height: 1;
+  font-family: var(--font-display);
+  font-size: 32px;
+  position: relative;
 }
 
-.unit-stack {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.integer-display {
-  font-size: 48px; /* Inteiro ligeiramente maior */
-  margin-right: 4px;
+.fraction-line {
+  border-bottom: 4px solid #333;
+  width: 60px;
+  margin: 6px auto;
 }
 
 .math-symbol {
@@ -1035,37 +1027,17 @@ input[type="range"]:focus-visible {
     padding: 20px;
   }
 
-/* ─── CONTROLS ─── */
-.controls {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  margin-bottom: 22px;
-  padding: 18px 20px;
-  background: #ffffff;
-  border: 1px solid #e0e0e0;
-}
+  .controls {
+    padding: 16px;
+    gap: 12px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
 
-.input-group {
-  background: white;
-  padding: 12px 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  border: 1px solid #e0e0e0;
-  font-weight: 900;
-}
-
-.small-number {
-  width: 58px;
-  text-align: center;
-  font-weight: 900;
-  font-size: 1.2rem;
-  border: none;
-  outline: none;
-}
+  .input-group {
+    padding: 10px 14px;
+    font-size: 1rem;
+  }
 
   .input-group input[type="number"] {
     width: 50px;
@@ -1184,26 +1156,11 @@ input[type="range"]:focus-visible {
     font-size: 28px;
     margin: 0 6px;
   }
-@media (max-width: 600px) {
-  .math-label { font-size: 28px; }
-  .integer-display { font-size: 38px; }
-}
-.fraction-column {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-width: 45px;
-}
-  .num, .den {
-  padding: 0 4px;
-}
 
-.fraction-line {
-  border-bottom: 4px solid currentColor;
-  width: 100%;
-  margin: 4px 0;
-}
+  .fraction-line {
+    width: 45px;
+  }
+
   .btn {
     width: auto;
     padding: 10px 16px;
