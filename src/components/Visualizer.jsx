@@ -77,7 +77,8 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
                 {Array.from({ length: integerPart }).map((_, i) => (
                   <FractionBlock
                     key={`full-${i}`}
-                    num={1} den={1}
+                    num={den} den={den}
+                    mixed
                     shape={shape} numeratorFill={numeratorFill} unfilledFill={unfilledFill}
                     hideLabel={true}
                     thickness={thickness} borderFill={borderFill}
@@ -87,6 +88,7 @@ export default function Visualizer({ thickness, numeratorFill, unfilledFill, bor
                   <FractionBlock
                     key="remainder"
                     num={remainderPart} den={den}
+                    mixed
                     shape={shape} numeratorFill={numeratorFill} unfilledFill={unfilledFill}
                     hideLabel={true}
                     thickness={thickness} borderFill={borderFill}
