@@ -25,6 +25,17 @@ function drawFractionLabel(ctx, num, den, x, y, color, localHide, globalHide, th
   ctx.fillText(ds, x, y + 18)
 }
 
+// Agrupa frações equivalentes (mesmo valor) mantendo o índice original (para a cor)
+function groupByValue(fractions) {
+  const groups = []
+  fractions.forEach((f, i) => {
+    const g = groups.find(g => g.items[0].f.num * f.den === f.num * g.items[0].f.den)
+    if (g) g.items.push({ f, i })
+    else groups.push({ value: f.num / f.den, items: [{ f, i }] })
+  })
+  return groups
+}
+
 export function renderRetaOnCanvas(canvas, fractions, localHide, globalHide, thickness = 2, borderColor = '#333') {
   const ctx = canvas.getContext('2d')
   ctx.clearRect(0, 0, canvas.width, canvas.height)
@@ -76,17 +87,55 @@ export function renderRetaOnCanvas(canvas, fractions, localHide, globalHide, thi
     }
   }
 
-  // Points
-  fractions.forEach((f, i) => {
-    const col = POINT_COLORS[i % POINT_COLORS.length]
-    const value = f.num / f.den
-    const posX = margin + (value - minVal) * step
-    ctx.beginPath(); ctx.arc(posX, y, 8, 0, Math.PI * 2)
-    ctx.fillStyle = col; ctx.fill()
-    ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke()
-    
-    // Passando os dois estados para a função
-    drawFractionLabel(ctx, f.num, f.den, posX, y - 30, col, localHide, globalHide, thickness)
+  // Points (frações equivalentes ficam agrupadas na mesma posição)
+  const SLOT = 48 // largura reservada para cada rótulo quando há grupo
+
+  groupByValue(fractions).forEach(group => {
+    const n = group.items.length
+    const posX = margin + (group.value - minVal) * step
+
+    if (n === 1) {
+      // Fração isolada: comportamento original
+      const { f, i } = group.items[0]
+      const col = POINT_COLORS[i % POINT_COLORS.length]
+      ctx.beginPath(); ctx.arc(posX, y, 8, 0, Math.PI * 2)
+      ctx.fillStyle = col; ctx.fill()
+      ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke()
+      drawFractionLabel(ctx, f.num, f.den, posX, y - 30, col, localHide, globalHide, thickness)
+      return
+    }
+
+    // Grupo equivalente: um ponto maior dividido em fatias (uma cor por fração)
+    const radius = 11
+    const slice = (2 * Math.PI) / n
+    const start = Math.PI / 2 // começa embaixo e vai no sentido horário: a 1ª fatia fica à esquerda
+
+    group.items.forEach(({ i }, k) => {
+      const col = POINT_COLORS[i % POINT_COLORS.length]
+      ctx.beginPath(); ctx.moveTo(posX, y)
+      ctx.arc(posX, y, radius, start + k * slice, start + (k + 1) * slice)
+      ctx.closePath()
+      ctx.fillStyle = col; ctx.fill()
+      ctx.strokeStyle = '#333'; ctx.lineWidth = 1; ctx.stroke()
+    })
+
+    // Rótulos lado a lado, centralizados no ponto, ligados a ele por linhas-guia
+    if (globalHide) return
+    const labelY = y - 46
+    const firstX = posX - ((n - 1) * SLOT) / 2
+
+    group.items.forEach(({ f, i }, k) => {
+      const col = POINT_COLORS[i % POINT_COLORS.length]
+      const lx = firstX + k * SLOT
+
+      // linha-guia do rótulo até o topo do ponto
+      ctx.beginPath()
+      ctx.moveTo(lx, labelY + 24)
+      ctx.lineTo(posX + (lx - posX) * 0.3, y - radius - 1)
+      ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.stroke()
+
+      drawFractionLabel(ctx, f.num, f.den, lx, labelY, col, localHide, globalHide, thickness)
+    })
   })
 }
 
